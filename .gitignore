@@ -1,0 +1,100 @@
+# --- Python ---
+__pycache__/
+*.py[cod]
+*$py.class
+api_keys
+
+# C extensions
+*.so
+
+# Distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Installer logs
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+.pytest_cache/
+
+# Type checkers
+.mypy_cache/
+.dmypy.json
+dmypy.json
+.pyre/
+.pytype/
+
+# Virtual environments
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+.python-version
+
+# IDE/editor
+.idea/
+.vscode/
+*.code-workspace
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# --- Django ---
+*.log
+local_settings.py
+# SQLite DBs
+/db.sqlite3
+/db.sqlite3-journal
+
+# Collected static files (via collectstatic)
+/staticfiles/
+/static_root/
+
+# User-uploaded media
+/media/
+
+# Django cache
+/django_cache/
+
+# Gunicorn / uWSGI
+*.pid
+
+# dotenv
+*.env
+.env.*
+
+# Project-specific
+/sample/
+/documents/
+/templates/__pycache__/

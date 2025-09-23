@@ -1,0 +1,82 @@
+You are a precise code analyst. Read the Django models file at "legisense_backend/api/models_db/simulation.py" and return a single strict JSON object that fully describes every model, field, relationship, choices/enums, Meta options, and useful derived info.
+
+Requirements:
+- Analyze only the given file. Do not invent models not present.
+- Include every class subclassing django.db.models.Model.
+- For each model include: docstring (if any), Meta options, __str__ best-effort template, and a complete list of fields with all options.
+- Preserve literal defaults and choice keys/labels exactly as written.
+- If unknown, use null and add a brief reason in an adjacent "notes" field.
+- Output MUST be valid JSON (RFC 8259). No markdown, comments, or trailing commas.
+- Return ONLY the JSON.
+
+Output JSON schema:
+{
+  "file": "legisense_backend/api/models_db/simulation.py",
+  "extracted_at": "ISO-8601 timestamp",
+  "models": [
+    {
+      "name": "ModelName",
+      "docstring": "... or null",
+      "meta": {
+        "ordering": ["field", "id"],
+        "db_table": "... or null",
+        "app_label": "... or null",
+        "verbose_name": "... or null",
+        "verbose_name_plural": "... or null",
+        "constraints": []
+      },
+      "str_repr": { "template": "...", "notes": null },
+      "fields": [
+        {
+          "name": "field_name",
+          "kind": "AutoField|CharField|TextField|IntegerField|PositiveIntegerField|DecimalField|DateTimeField|JSONField|ForeignKey|...",
+          "db_type": null,
+          "null": false,
+          "blank": false,
+          "primary_key": false,
+          "unique": false,
+          "default": null,
+          "max_length": null,
+          "decimal_places": null,
+          "max_digits": null,
+          "choices": [ { "key": "...", "label": "..." } ],
+          "enum_name": null,
+          "help_text": null,
+          "verbose_name": null,
+          "related": {
+            "type": "ForeignKey|OneToOne|ManyToMany|none",
+            "to": "app.Model or Model",
+            "on_delete": null,
+            "related_name": null
+          },
+          "validators": [],
+          "notes": null
+        }
+      ]
+    }
+  ],
+  "enums": [
+    { "name": "EnumName", "source_model": "ModelName", "source_field": "field_name", "members": [ { "key": "...", "label": "..." } ] }
+  ],
+  "relationships": [
+    { "from_model": "ModelA", "from_field": "field_name", "to_model": "ModelB", "cardinality": "many-to-one|one-to-many|one-to-one|many-to-many", "on_delete": null, "related_name": null }
+  ],
+  "derived": {
+    "timeline_models": [],
+    "money_fields": [ { "model": "Model", "field": "amount", "type": "DecimalField", "max_digits": 12, "decimal_places": 2 } ],
+    "ordering": [ { "model": "Model", "ordering": ["field", "id"] } ]
+  }
+}
+
+Checklist specific to simulation.py (must be reflected in JSON when present):
+- Models: SimulationSession, SimulationTimelineNode, SimulationPenaltyForecast, SimulationExitComparison, SimulationNarrativeOutcome, SimulationLongTermPoint, SimulationRiskAlert.
+- Choices: SimulationSession.scenario, SimulationExitComparison.risk_level, SimulationNarrativeOutcome.severity, SimulationRiskAlert.level.
+- Foreign keys: All models reference SimulationSession except SimulationSession.document which references ParsedDocument.
+- Meta.ordering present on SimulationTimelineNode (["order", "id"]) and SimulationLongTermPoint (["index", "id"]).
+- Decimal precision for money/value fields (max_digits, decimal_places) must be captured.
+
+Consumer parsing guidance:
+- Validate JSON against the schema above.
+- Build enum maps from "enums" and link to fields via source_model/source_field.
+- Build relationship graph from "relationships" for API/UI generation.
+- Use "derived" to quickly locate timeline models, currency fields, and ordering rules.

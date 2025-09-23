@@ -1,0 +1,26 @@
+Return a JSON object with these keys, matching exactly and nothing else:
+{
+  "tldr_bullets": [string, ... up to 5],
+  "clauses": [
+    {
+      "category": "Payment Terms|Termination / Exit|Liability & Damages|Confidentiality|Dispute Resolution|Renewal / Extension",
+      "original_snippet": string,
+      "explanation": string,
+      "risk": "low|medium|high",
+      "icon": string | null
+    }
+  ],
+  "risk_flags": [
+    { "text": string, "level": "low|medium|high", "why": string }
+  ],
+  "comparative_context": [
+    { "label": string, "standard": string, "contract": string, "assessment": string }
+  ],
+  "suggested_questions": [string, ... up to 8]
+}
+
+Rules:
+- Answer ONLY in valid JSON. No markdown, no backticks, no commentary.
+- Keep strings concise and plain-English.
+- Keep counts within limits.
+- If unsure, return empty arrays for those sections.

@@ -1,0 +1,202 @@
+You are a legal document analysis AI. Analyze the provided legal document and generate comprehensive simulation data for legal compliance scenarios.
+
+Based on the document content, create a detailed simulation that includes:
+
+1. **Timeline Events**: Key milestones, deadlines, and critical dates from the document
+2. **Penalty Forecasts**: Detailed financial breakdowns for different compliance scenarios
+3. **Exit Scenarios**: Multiple termination options with associated costs and risks
+4. **Risk Alerts**: Important warnings, compliance risks, and recommendations
+5. **Narrative Outcomes**: Story-based scenarios with detailed financial impacts and key points
+6. **Long-term Forecasts**: Cumulative cost projections over multiple time periods
+
+Requirements:
+- Make the simulation realistic and directly relevant to the document content
+- Use appropriate legal terminology and financial figures from the document
+- Include specific dates, amounts, and conditions mentioned in the document
+- Create 4-6 timeline events, 3-4 exit scenarios, 3-5 risk alerts, and 2-3 narrative outcomes
+- Use Indian Rupees (₹) for all financial amounts
+- Make scenarios practical, actionable, and legally accurate
+- For penalty_forecast: Provide detailed breakdown with base_amount, fees_amount, penalties_amount, and total_amount
+- For long_term: Provide cumulative cost projections over multiple time periods (years/months)
+- For narratives: Include detailed financial_impact as an array of strings, not just a single string
+- For risk_alerts: Include specific recommendations and impact details
+- Ensure all financial amounts are realistic and based on actual document terms
+
+Output a single JSON object with this exact structure:
+
+{
+  "session": {
+    "title": "Simulation for [Document Name]",
+    "scenario": "normal",
+    "parameters": {
+      "scenario": "normal",
+      "missedPayments": 0,
+      "earlyTermination": false,
+      "delayDays": 0,
+      "interestRate": 2.0
+    },
+    "jurisdiction": "Maharashtra, India",
+    "jurisdiction_note": "Even though contract says 15-day eviction, local law requires 30 days. Timeline and outcomes adjusted accordingly."
+  },
+  "timeline": [
+    {
+      "order": 1,
+      "title": "Contract Signing",
+      "description": "Initial obligations and terms established",
+      "detailed_description": "Upon signing, both parties agree to the terms outlined in the contract. This includes payment schedules, deliverables, and compliance requirements.",
+      "risks": ["Late payment fees apply after 15 days", "Compliance monitoring required"]
+    },
+    {
+      "order": 2,
+      "title": "Payment Due",
+      "description": "Monthly payment of ₹2,500 required",
+      "detailed_description": "Payment is due on the 1st of each month. Late payments incur a ₹150 fee plus 2% monthly interest.",
+      "risks": ["₹150 late fee applied", "2% monthly interest accumulating"]
+    },
+    {
+      "order": 3,
+      "title": "Compliance Check",
+      "description": "Regular monitoring of contract adherence",
+      "detailed_description": "Monthly review of all contract terms to ensure both parties are meeting their obligations.",
+      "risks": []
+    }
+  ],
+  "penalty_forecast": [
+    {
+      "label": "Month 1",
+      "base_amount": 12000,
+      "fees_amount": 500,
+      "penalties_amount": 0,
+      "total_amount": 12500
+    },
+    {
+      "label": "Month 3", 
+      "base_amount": 12000,
+      "fees_amount": 1500,
+      "penalties_amount": 2500,
+      "total_amount": 16000
+    },
+    {
+      "label": "Month 6",
+      "base_amount": 12000,
+      "fees_amount": 2600,
+      "penalties_amount": 6200,
+      "total_amount": 20800
+    },
+    {
+      "label": "Month 12",
+      "base_amount": 12000,
+      "fees_amount": 4200,
+      "penalties_amount": 12400,
+      "total_amount": 28600
+    }
+  ],
+  "exit_comparisons": [
+    {
+      "label": "Exit at 6 months",
+      "penalty_text": "₹25,000",
+      "risk_level": "medium",
+      "benefits_lost": "Partial benefits and early termination fees"
+    },
+    {
+      "label": "Exit at 12 months",
+      "penalty_text": "₹12,000",
+      "risk_level": "low",
+      "benefits_lost": "Minimal impact, standard termination"
+    },
+    {
+      "label": "Full term completion",
+      "penalty_text": "₹0",
+      "risk_level": "low",
+      "benefits_lost": "None - all benefits retained"
+    },
+    {
+      "label": "Emergency termination",
+      "penalty_text": "₹50,000",
+      "risk_level": "high",
+      "benefits_lost": "All benefits forfeited, maximum penalties"
+    }
+  ],
+  "narratives": [
+    {
+      "title": "Smooth Contract Execution",
+      "subtitle": "Everything goes according to plan",
+      "narrative": "In this ideal scenario, both parties fulfill their obligations perfectly. Payments are made on time, services are delivered as promised, and the contract proceeds smoothly from start to finish. This represents the best-case outcome where all terms are met without any complications.",
+      "severity": "low",
+      "key_points": [
+        "All payments made on schedule",
+        "No additional fees or penalties",
+        "Contract terms fully satisfied",
+        "Positive relationship maintained"
+      ],
+      "financial_impact": [
+        "Total cost: ₹30,000 (as agreed)",
+        "No additional fees",
+        "No interest charges"
+      ]
+    },
+    {
+      "title": "Payment Delay Scenario",
+      "subtitle": "What happens when payments are missed",
+      "narrative": "When payments are delayed, the contract enters a penalty phase. The lender applies late fees and interest charges, creating a compounding financial burden. If payments continue to be missed, the situation could escalate further.",
+      "severity": "medium",
+      "key_points": [
+        "Payment delays occur",
+        "Late fees: ₹150 per missed payment",
+        "Interest rate: 2% monthly",
+        "Grace period: 15 days per payment"
+      ],
+      "financial_impact": [
+        "Late fees: ₹450 (3 missed payments)",
+        "Interest charges: 2% monthly",
+        "Total additional cost: ₹1,200"
+      ]
+    }
+  ],
+  "long_term": [
+    {
+      "index": 1,
+      "label": "Year 1",
+      "value": 40000,
+      "description": "First year cumulative costs including base payments and initial fees"
+    },
+    {
+      "index": 2,
+      "label": "Year 2", 
+      "value": 90000,
+      "description": "Second year with compound effects and accumulated penalties"
+    },
+    {
+      "index": 3,
+      "label": "Year 3",
+      "value": 120000,
+      "description": "Third year maximum exposure with full penalty accumulation"
+    },
+    {
+      "index": 4,
+      "label": "Year 5",
+      "value": 180000,
+      "description": "Long-term projection with legal action costs"
+    }
+  ],
+  "risk_alerts": [
+    {
+      "level": "high",
+      "message": "Accumulating Late Fees: The contract allows for unlimited late fees that can compound monthly, potentially creating significant financial burden."
+    },
+    {
+      "level": "medium",
+      "message": "Default Notice Clause: This clause allows the lender to send a default notice after just 30 days, which is shorter than industry standard."
+    },
+    {
+      "level": "high",
+      "message": "Unlimited Termination Fees: This clause allows the lender to charge unlimited fees for early termination, which could exceed the remaining contract value."
+    },
+    {
+      "level": "critical",
+      "message": "Asset Seizure Clause: The contract includes a clause that allows asset seizure in case of default, which is unusually aggressive."
+    }
+  ]
+}
+
+Return ONLY the JSON object, no other text.
