@@ -131,9 +131,15 @@ def parsed_doc_analysis_view(request: HttpRequest, pk: int):
     if request.method != "GET":
         return JsonResponse({"error": "Method not allowed"}, status=405)
     doc = get_object_or_404(ParsedDocument, pk=pk)
-    if not hasattr(doc, "analysis") or doc.analysis.status != "success":
-        return JsonResponse({"error": "Analysis not available"}, status=404)
-    return JsonResponse({"id": doc.analysis.id, "analysis": doc.analysis.output_json})
+    if not hasattr(doc, "analysis"):
+        return JsonResponse({"status": "pending"})
+    if doc.analysis.status != "success":
+        # Surface current status and error if any, so clients can decide to poll
+        return JsonResponse({
+            "status": doc.analysis.status,
+            "error": getattr(doc.analysis, "error", "")
+        })
+    return JsonResponse({"id": doc.analysis.id, "status": "success", "analysis": doc.analysis.output_json})
 
 
 @csrf_exempt
