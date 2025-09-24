@@ -19,7 +19,7 @@ def load_prompt_text() -> str:
     return path.read_text(encoding="utf-8")
 
 
-def truncate_pages(pages: List[str], max_chars: int = 12000) -> str:
+def truncate_pages(pages: List[str], max_chars: int = 6000) -> str:
     """Join page texts and cap to max_chars preserving some head and tail."""
     full = "\n\n".join(pages)
     if len(full) <= max_chars:
@@ -45,7 +45,7 @@ def call_openrouter_for_analysis(pages: List[str], meta: Dict[str, Any]) -> Dict
     data = client.create_chat_completion(
         messages=[{"role": "system", "content": system}, {"role": "user", "content": user}],
         temperature=0.2,
-        max_tokens=2200,
+        max_tokens=900,
     )
     content = data.get("choices", [{}])[0].get("message", {}).get("content", "{}")
 
@@ -64,7 +64,7 @@ def call_openrouter_for_analysis(pages: List[str], meta: Dict[str, Any]) -> Dict
                 {"role": "user", "content": repair_user},
             ],
             temperature=0.0,
-            max_tokens=2200,
+            max_tokens=900,
         )
         content2 = data2.get("choices", [{}])[0].get("message", {}).get("content", "{}")
         try:
