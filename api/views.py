@@ -96,14 +96,36 @@ def parse_pdf_view(request: HttpRequest):
     response["file_url"] = doc.uploaded_file.url if doc.uploaded_file else None
     response["file_name"] = doc.file_name
 
-    # Trigger analysis asynchronously to prevent worker timeout
+    # Run analysis synchronously (Render allows ~30–60s). This ensures
+    # the client gets analysis immediately without extra polling.
+    analysis_obj = None
     try:
-        _analyze_document_async(doc.id, data)
+        meta = {"file_name": doc.file_name, "num_pages": doc.num_pages}
+        pages = [p.get("text", "") for p in data.get("pages", [])]
+        analysis_payload = call_openrouter_for_analysis(pages, meta)
+        analysis_obj, _ = DocumentAnalysis.objects.update_or_create(
+            document=doc,
+            defaults={
+                "status": "success" if analysis_payload else "failed",
+                "output_json": analysis_payload or {},
+                "model": "openrouter",
+            },
+        )
     except Exception as exc:  # noqa: BLE001
-        # Log error but don't fail the upload
-        print(f"Background analysis failed for document {doc.id}: {exc}")
+        analysis_obj, _ = DocumentAnalysis.objects.update_or_create(
+            document=doc,
+            defaults={"status": "failed", "error": str(exc)},
+        )
 
-    response["analysis_available"] = False  # Will be updated when analysis completes
+    # Trigger translations for all supported languages (background process)
+    if analysis_obj and analysis_obj.status == "success":
+        try:
+            _translate_document_async(doc.id, data)
+            _translate_analysis_async(analysis_obj.id, analysis_obj.output_json)
+        except Exception as exc:  # noqa: BLE001
+            print(f"Background translation failed for document {doc.id}: {exc}")
+
+    response["analysis_available"] = DocumentAnalysis.objects.filter(document=doc, status="success").exists()
     return JsonResponse(response)
 
 
