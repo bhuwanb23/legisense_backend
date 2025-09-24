@@ -96,38 +96,14 @@ def parse_pdf_view(request: HttpRequest):
     response["file_url"] = doc.uploaded_file.url if doc.uploaded_file else None
     response["file_name"] = doc.file_name
 
-    # Trigger analysis synchronously (simple implementation)
-    analysis_obj = None
+    # Trigger analysis asynchronously to prevent worker timeout
     try:
-        meta = {"file_name": doc.file_name, "num_pages": doc.num_pages}
-        pages = [p.get("text", "") for p in data.get("pages", [])]
-        analysis_payload = call_openrouter_for_analysis(pages, meta)
-        analysis_obj, _ = DocumentAnalysis.objects.update_or_create(
-            document=doc,
-            defaults={
-                "status": "success" if analysis_payload else "failed",
-                "output_json": analysis_payload or {},
-                "model": "openrouter",
-            },
-        )
+        _analyze_document_async(doc.id, data)
     except Exception as exc:  # noqa: BLE001
-        analysis_obj, _ = DocumentAnalysis.objects.update_or_create(
-            document=doc,
-            defaults={"status": "failed", "error": str(exc)},
-        )
+        # Log error but don't fail the upload
+        print(f"Background analysis failed for document {doc.id}: {exc}")
 
-    # Trigger translations for all supported languages (background process)
-    if analysis_obj and analysis_obj.status == "success":
-        try:
-            # Translate document content for all languages
-            _translate_document_async(doc.id, data)
-            # Translate analysis for all languages
-            _translate_analysis_async(analysis_obj.id, analysis_obj.output_json)
-        except Exception as exc:  # noqa: BLE001
-            # Log error but don't fail the upload
-            print(f"Background translation failed for document {doc.id}: {exc}")
-
-    response["analysis_available"] = DocumentAnalysis.objects.filter(document=doc, status="success").exists()
+    response["analysis_available"] = False  # Will be updated when analysis completes
     return JsonResponse(response)
 
 
@@ -870,6 +846,57 @@ def _translate_document_async(document_id: int, document_data: dict):
     thread.start()
 
 
+def _analyze_document_async(document_id: int, document_data: dict):
+    """Background function to analyze document content."""
+    def analyze_worker():
+        try:
+            doc = ParsedDocument.objects.get(id=document_id)
+            meta = {"file_name": doc.file_name, "num_pages": doc.num_pages}
+            pages = [p.get("text", "") for p in document_data.get("pages", [])]
+            
+            # Call OpenRouter API for analysis
+            analysis_payload = call_openrouter_for_analysis(pages, meta)
+            
+            # Create analysis record
+            analysis_obj, _ = DocumentAnalysis.objects.update_or_create(
+                document=doc,
+                defaults={
+                    "status": "success" if analysis_payload else "failed",
+                    "output_json": analysis_payload or {},
+                    "model": "openrouter",
+                },
+            )
+            
+            # Trigger translations if analysis was successful
+            if analysis_obj and analysis_obj.status == "success":
+                try:
+                    # Translate document content for all languages
+                    _translate_document_async(doc.id, document_data)
+                    # Translate analysis for all languages
+                    _translate_analysis_async(analysis_obj.id, analysis_obj.output_json)
+                except Exception as exc:  # noqa: BLE001
+                    print(f"Background translation failed for document {doc.id}: {exc}")
+            
+            print(f"✅ Document {document_id} analysis completed")
+            
+        except Exception as e:
+            print(f"❌ Background analysis failed for document {document_id}: {e}")
+            # Create failed analysis record
+            try:
+                doc = ParsedDocument.objects.get(id=document_id)
+                DocumentAnalysis.objects.update_or_create(
+                    document=doc,
+                    defaults={"status": "failed", "error": str(e)},
+                )
+            except Exception:
+                pass
+    
+    # Run in background thread
+    thread = threading.Thread(target=analyze_worker)
+    thread.daemon = True
+    thread.start()
+
+
 def _translate_analysis_async(analysis_id: int, analysis_json: dict):
     """Background function to translate analysis for all languages."""
     def translate_worker():
@@ -904,6 +931,57 @@ def _translate_analysis_async(analysis_id: int, analysis_json: dict):
     
     # Run in background thread
     thread = threading.Thread(target=translate_worker)
+    thread.daemon = True
+    thread.start()
+
+
+def _analyze_document_async(document_id: int, document_data: dict):
+    """Background function to analyze document content."""
+    def analyze_worker():
+        try:
+            doc = ParsedDocument.objects.get(id=document_id)
+            meta = {"file_name": doc.file_name, "num_pages": doc.num_pages}
+            pages = [p.get("text", "") for p in document_data.get("pages", [])]
+            
+            # Call OpenRouter API for analysis
+            analysis_payload = call_openrouter_for_analysis(pages, meta)
+            
+            # Create analysis record
+            analysis_obj, _ = DocumentAnalysis.objects.update_or_create(
+                document=doc,
+                defaults={
+                    "status": "success" if analysis_payload else "failed",
+                    "output_json": analysis_payload or {},
+                    "model": "openrouter",
+                },
+            )
+            
+            # Trigger translations if analysis was successful
+            if analysis_obj and analysis_obj.status == "success":
+                try:
+                    # Translate document content for all languages
+                    _translate_document_async(doc.id, document_data)
+                    # Translate analysis for all languages
+                    _translate_analysis_async(analysis_obj.id, analysis_obj.output_json)
+                except Exception as exc:  # noqa: BLE001
+                    print(f"Background translation failed for document {doc.id}: {exc}")
+            
+            print(f"✅ Document {document_id} analysis completed")
+            
+        except Exception as e:
+            print(f"❌ Background analysis failed for document {document_id}: {e}")
+            # Create failed analysis record
+            try:
+                doc = ParsedDocument.objects.get(id=document_id)
+                DocumentAnalysis.objects.update_or_create(
+                    document=doc,
+                    defaults={"status": "failed", "error": str(e)},
+                )
+            except Exception:
+                pass
+    
+    # Run in background thread
+    thread = threading.Thread(target=analyze_worker)
     thread.daemon = True
     thread.start()
 
@@ -1382,6 +1460,57 @@ def _translate_simulation_related_data_async(session_id: int, target_language: s
     
     # Run in background thread
     thread = threading.Thread(target=translate_worker)
+    thread.daemon = True
+    thread.start()
+
+
+def _analyze_document_async(document_id: int, document_data: dict):
+    """Background function to analyze document content."""
+    def analyze_worker():
+        try:
+            doc = ParsedDocument.objects.get(id=document_id)
+            meta = {"file_name": doc.file_name, "num_pages": doc.num_pages}
+            pages = [p.get("text", "") for p in document_data.get("pages", [])]
+            
+            # Call OpenRouter API for analysis
+            analysis_payload = call_openrouter_for_analysis(pages, meta)
+            
+            # Create analysis record
+            analysis_obj, _ = DocumentAnalysis.objects.update_or_create(
+                document=doc,
+                defaults={
+                    "status": "success" if analysis_payload else "failed",
+                    "output_json": analysis_payload or {},
+                    "model": "openrouter",
+                },
+            )
+            
+            # Trigger translations if analysis was successful
+            if analysis_obj and analysis_obj.status == "success":
+                try:
+                    # Translate document content for all languages
+                    _translate_document_async(doc.id, document_data)
+                    # Translate analysis for all languages
+                    _translate_analysis_async(analysis_obj.id, analysis_obj.output_json)
+                except Exception as exc:  # noqa: BLE001
+                    print(f"Background translation failed for document {doc.id}: {exc}")
+            
+            print(f"✅ Document {document_id} analysis completed")
+            
+        except Exception as e:
+            print(f"❌ Background analysis failed for document {document_id}: {e}")
+            # Create failed analysis record
+            try:
+                doc = ParsedDocument.objects.get(id=document_id)
+                DocumentAnalysis.objects.update_or_create(
+                    document=doc,
+                    defaults={"status": "failed", "error": str(e)},
+                )
+            except Exception:
+                pass
+    
+    # Run in background thread
+    thread = threading.Thread(target=analyze_worker)
     thread.daemon = True
     thread.start()
 
