@@ -28,6 +28,17 @@ def run_extraction(document_content: str = "") -> Dict[str, Any]:
     if not document_content.strip():
         document_content = "Generic legal document for simulation purposes."
 
+    # Truncate very long documents to keep inference under provider limits
+    def _truncate_text(txt: str, max_chars: int = 6000) -> str:
+        txt = txt.strip()
+        if len(txt) <= max_chars:
+            return txt
+        head = txt[: max_chars // 2]
+        tail = txt[-max_chars // 2 :]
+        return f"{head}\n\n...TRUNCATED...\n\n{tail}"
+
+    document_content = _truncate_text(document_content)
+
     system_msg = {
         "role": "system",
         "content": "You are a legal document analysis AI that generates realistic simulation data based on document content. Always return valid JSON."
@@ -40,8 +51,8 @@ def run_extraction(document_content: str = "") -> Dict[str, Any]:
     client = OpenRouterClient()
     data = client.create_chat_completion(
         messages=[system_msg, user_msg],
-        temperature=0.0,
-        max_tokens=4000,
+        temperature=0.2,
+        max_tokens=900,
         response_format={"type": "json_object"},
     )
 

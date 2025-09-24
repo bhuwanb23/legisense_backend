@@ -6,24 +6,306 @@
     <title>Legisense Backend</title>
     <style>
       body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; margin: 0; padding: 40px; background: #f8fafc; color: #0f172a; }
-      .card { max-width: 720px; margin: 0 auto; background: #ffffff; padding: 24px; border-radius: 12px; box-shadow: 0 10px 20px rgba(0,0,0,.06); }
+      .card { max-width: 1100px; margin: 0 auto; background: #ffffff; padding: 24px; border-radius: 12px; box-shadow: 0 10px 20px rgba(0,0,0,.06); }
       h1 { margin: 0 0 8px; }
-      code { background: #f1f5f9; padding: 2px 6px; border-radius: 6px; }
       a { color: #2563eb; text-decoration: none; }
+      .topbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+      .tabs { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 8px; border-bottom: 1px solid #e5e7eb; }
+      .tab { border: 1px solid #e5e7eb; padding: 8px 12px; border-radius: 9999px; background: #f1f5f9; cursor: pointer; font-size: 14px; white-space: nowrap; }
+      .tab.active { background: #2563eb; color: #fff; border-color: #2563eb; }
+      .section { display: none; margin-top: 20px; }
+      .section.active { display: block; }
+      table { width: 100%; border-collapse: collapse; font-size: 14px; }
+      th, td { text-align: left; padding: 10px 12px; border-bottom: 1px solid #e5e7eb; vertical-align: top; }
+      th { background: #f8fafc; font-weight: 600; }
+      .muted { color: #64748b; }
+      .meta { font-size: 12px; color: #64748b; }
+      .section h2 { margin: 0 0 10px; }
+      .pagination { margin-top: 10px; display: flex; gap: 8px; align-items: center; }
+      .pill { display: inline-block; padding: 2px 8px; border-radius: 9999px; background: #e2e8f0; font-size: 12px; }
+      code { background: #f1f5f9; padding: 2px 6px; border-radius: 6px; }
     </style>
   </head>
   <body>
     <div class="card">
-      <h1>Legisense Backend</h1>
-      <p>This is a simple landing page for your Django backend.</p>
-      <p>API endpoint for PDF parsing:</p>
-      <p><code>POST /api/parse-pdf/</code></p>
-      <p>Form field: <code>file</code> (PDF).</p>
-      <p>Response: JSON with <code>file</code>, <code>num_pages</code>, <code>pages</code>, <code>full_text</code>.</p>
-      <p><a href="/admin/">Go to Django Admin</a></p>
-      <hr />
-      <p>Download a sample PDF to test the API:</p>
-      <p><a href="/assets/sample_text.pdf" download>Download sample_text.pdf</a></p>
+      <div class="topbar">
+        <h1>Legisense Backend</h1>
+        <a href="/admin/">Admin</a>
+      </div>
+
+      <div class="tabs" id="tabs">
+        <button class="tab active" data-target="sec-docs">Documents</button>
+        <button class="tab" data-target="sec-analyses">Analyses</button>
+        <button class="tab" data-target="sec-sim-sessions">Simulation Sessions</button>
+        <button class="tab" data-target="sec-sim-risks">Risk Alerts</button>
+        <button class="tab" data-target="sec-sim-long">Long-term Points</button>
+        <button class="tab" data-target="sec-doc-trans">Doc Translations</button>
+        <button class="tab" data-target="sec-analysis-trans">Analysis Translations</button>
+        <button class="tab" data-target="sec-exit-comp">Exit Comparisons</button>
+        <button class="tab" data-target="sec-narratives">Narratives</button>
+      </div>
+
+      <div class="section active" id="sec-docs">
+        <h2>Parsed Documents <span class="pill">{{ docs.paginator.count|default:0 }}</span></h2>
+        {% if docs.items %}
+          <table>
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>File name</th>
+                <th>Pages</th>
+                <th class="muted">Uploaded</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for d in docs.items %}
+              <tr>
+                <td>#{{ d.id }}</td>
+                <td>{{ d.file_name }}</td>
+                <td>{{ d.num_pages }}</td>
+                <td class="muted">{{ d.created_at|default:"—" }}</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+          {% if docs.paginator.num_pages > 1 %}
+            <div class="pagination">
+              {% if docs.page_obj.has_previous %}
+                <a href="?{{ docs.page_param }}={{ docs.page_obj.previous_page_number }}">Prev</a>
+              {% endif %}
+              <span>Page {{ docs.page_obj.number }} of {{ docs.paginator.num_pages }}</span>
+              {% if docs.page_obj.has_next %}
+                <a href="?{{ docs.page_param }}={{ docs.page_obj.next_page_number }}">Next</a>
+              {% endif %}
+            </div>
+          {% endif %}
+        {% else %}
+          <p>No documents yet.</p>
+        {% endif %}
+      </div>
+
+      <div class="section" id="sec-analyses">
+        <h2>Analyses <span class="pill">{{ analyses.paginator.count|default:0 }}</span></h2>
+        {% if analyses.items %}
+          <table>
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Document</th>
+                <th>Status</th>
+                <th class="muted">Model</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for a in analyses.items %}
+              <tr>
+                <td>#{{ a.id }}</td>
+                <td>{{ a.document_id }}</td>
+                <td>{{ a.status }}</td>
+                <td class="muted">{{ a.model|default:"—" }}</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        {% else %}
+          <p>No analyses yet.</p>
+        {% endif %}
+      </div>
+
+      <div class="section" id="sec-sim-sessions">
+        <h2>Simulation Sessions <span class="pill">{{ sim_sessions.paginator.count|default:0 }}</span></h2>
+        {% if sim_sessions.items %}
+          <table>
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Document</th>
+                <th>Title</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for s in sim_sessions.items %}
+              <tr>
+                <td>#{{ s.id }}</td>
+                <td>{{ s.document_id }}</td>
+                <td>{{ s.title|default:"—" }}</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        {% else %}
+          <p>No simulation sessions yet.</p>
+        {% endif %}
+      </div>
+
+      <div class="section" id="sec-sim-risks">
+        <h2>Risk Alerts <span class="pill">{{ sim_risks.paginator.count|default:0 }}</span></h2>
+        {% if sim_risks.items %}
+          <table>
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Level</th>
+                <th>Message</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for r in sim_risks.items %}
+              <tr>
+                <td>#{{ r.id }}</td>
+                <td>{{ r.level }}</td>
+                <td class="muted">{{ r.message|truncatechars:160 }}</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        {% else %}
+          <p>No risk alerts yet.</p>
+        {% endif %}
+      </div>
+
+      <div class="section" id="sec-sim-long">
+        <h2>Long-term Points <span class="pill">{{ sim_long_term.paginator.count|default:0 }}</span></h2>
+        {% if sim_long_term.items %}
+          <table>
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Label</th>
+                <th>Description</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for p in sim_long_term.items %}
+              <tr>
+                <td>#{{ p.id }}</td>
+                <td>{{ p.label }}</td>
+                <td class="muted">{{ p.description|truncatechars:160 }}</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        {% else %}
+          <p>No long-term points yet.</p>
+        {% endif %}
+      </div>
+
+      <div class="section" id="sec-doc-trans">
+        <h2>Document Translations <span class="pill">{{ doc_translations.paginator.count|default:0 }}</span></h2>
+        {% if doc_translations.items %}
+          <table>
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Document</th>
+                <th>Language</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for t in doc_translations.items %}
+              <tr>
+                <td>#{{ t.id }}</td>
+                <td>{{ t.document_id }}</td>
+                <td>{{ t.language }}</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        {% else %}
+          <p>No document translations yet.</p>
+        {% endif %}
+      </div>
+
+      <div class="section" id="sec-analysis-trans">
+        <h2>Analysis Translations <span class="pill">{{ analysis_translations.paginator.count|default:0 }}</span></h2>
+        {% if analysis_translations.items %}
+          <table>
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Analysis</th>
+                <th>Language</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for t in analysis_translations.items %}
+              <tr>
+                <td>#{{ t.id }}</td>
+                <td>{{ t.analysis_id }}</td>
+                <td>{{ t.language }}</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        {% else %}
+          <p>No analysis translations yet.</p>
+        {% endif %}
+      </div>
+
+      <div class="section" id="sec-exit-comp">
+        <h2>Exit Comparisons <span class="pill">{{ sim_exit_comparisons.paginator.count|default:0 }}</span></h2>
+        {% if sim_exit_comparisons.items %}
+          <table>
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Label</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for e in sim_exit_comparisons.items %}
+              <tr>
+                <td>#{{ e.id }}</td>
+                <td>{{ e.label }}</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        {% else %}
+          <p>No exit comparisons yet.</p>
+        {% endif %}
+      </div>
+
+      <div class="section" id="sec-narratives">
+        <h2>Narrative Outcomes <span class="pill">{{ sim_narratives.paginator.count|default:0 }}</span></h2>
+        {% if sim_narratives.items %}
+          <table>
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Title</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for n in sim_narratives.items %}
+              <tr>
+                <td>#{{ n.id }}</td>
+                <td>{{ n.title }}</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        {% else %}
+          <p>No narrative outcomes yet.</p>
+        {% endif %}
+      </div>
+
+      <script>
+        (function() {
+          const tabs = document.querySelectorAll('.tab');
+          const sections = document.querySelectorAll('.section');
+          function activate(targetId) {
+            tabs.forEach(t => t.classList.toggle('active', t.dataset.target === targetId));
+            sections.forEach(s => s.classList.toggle('active', s.id === targetId));
+            try { localStorage.setItem('activeTab', targetId); } catch(e) {}
+          }
+          tabs.forEach(t => t.addEventListener('click', () => activate(t.dataset.target)));
+          try {
+            const saved = localStorage.getItem('activeTab');
+            if (saved && document.getElementById(saved)) activate(saved);
+          } catch(e) {}
+        })();
+      </script>
     </div>
   </body>
   </html>
