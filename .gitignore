@@ -96,5 +96,4 @@ local_settings.py
 
 # Project-specific
 /sample/
-/documents/
 /templates/__pycache__/
