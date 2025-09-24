@@ -29,8 +29,8 @@ SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-@+l*_-b!o$3bv9pv*6=)dc-9nv
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv('DEBUG', 'false').lower() == 'true'
 
-# ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '*').split(',')
-ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', 'localhost,127.0.0.1').split(',')
+# ALLOWED_HOSTS can be provided via env. Default allows local dev and Render subdomains
+ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', 'localhost,127.0.0.1,.onrender.com').split(',')
 
 
 
@@ -155,4 +155,11 @@ CORS_ALLOWED_ORIGINS = [
     "http://localhost:8080",
     "http://127.0.0.1:8080",
     "https://legisense-backend.onrender.com",
+    "https://legisense-backend-1.onrender.com",
 ]
+
+# CSRF trusted origins (needed on Render when DEBUG=False)
+CSRF_TRUSTED_ORIGINS = os.getenv(
+    'CSRF_TRUSTED_ORIGINS',
+    'https://*.onrender.com,https://localhost,https://127.0.0.1'
+).split(',')
