@@ -2,7 +2,7 @@ import threading
 from .models import ParsedDocument
 
 
-def _generate_simulation_async(document_id: int, document_data: dict):
+def _generate_simulation_async(document_id: int, document_data: dict, session_id: int = None):
     """Background function to generate simulation data."""
     def simulation_worker():
         try:
@@ -52,15 +52,26 @@ def _generate_simulation_async(document_id: int, document_data: dict):
                 SimulationRiskAlert,
             )
             
-            # Create the session
-            session = SimulationSession.objects.create(
-                document=doc,
-                title=str(session_data.get("title", f"Simulation for {doc.file_name}"))[:255],
-                scenario=str(session_data.get("scenario", "normal"))[:32],
-                parameters=session_data.get("parameters") or {},
-                jurisdiction=str(session_data.get("jurisdiction", ""))[:128],
-                jurisdiction_note=str(session_data.get("jurisdiction_note", "")),
-            )
+            # Update existing session or create new one
+            if session_id:
+                session = SimulationSession.objects.get(id=session_id)
+                # Update the session with real data
+                session.title = str(session_data.get("title", f"Simulation for {doc.file_name}"))[:255]
+                session.scenario = str(session_data.get("scenario", "normal"))[:32]
+                session.parameters = session_data.get("parameters") or {}
+                session.jurisdiction = str(session_data.get("jurisdiction", ""))[:128]
+                session.jurisdiction_note = str(session_data.get("jurisdiction_note", ""))
+                session.save()
+            else:
+                # Create new session if no session_id provided
+                session = SimulationSession.objects.create(
+                    document=doc,
+                    title=str(session_data.get("title", f"Simulation for {doc.file_name}"))[:255],
+                    scenario=str(session_data.get("scenario", "normal"))[:32],
+                    parameters=session_data.get("parameters") or {},
+                    jurisdiction=str(session_data.get("jurisdiction", ""))[:128],
+                    jurisdiction_note=str(session_data.get("jurisdiction_note", "")),
+                )
             
             # Create related objects
             for node in extracted.get("timeline", []) or []:

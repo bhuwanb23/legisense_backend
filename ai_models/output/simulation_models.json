@@ -10,39 +10,48 @@
       "interestRate": 2.0
     },
     "jurisdiction": "Maharashtra, India",
-    "jurisdiction_note": "Contract terms align with Indian IT services regulations, with adjustments for data privacy compliance under the Digital Personal Data Protection Act, 2023."
+    "jurisdiction_note": "Contract terms based on L&T Technology Services policies, with adjustments for local compliance requirements."
   },
   "timeline": [
     {
       "order": 1,
-      "title": "Contract Signing and Initial Data Handover",
-      "description": "Execution of agreement and transfer of limited real dataset",
-      "detailed_description": "Upon signing, L&T Technology Services provides the initial real dataset for synthetic data generation. The client agrees to pay the first milestone payment within 15 days.",
-      "risks": ["Late payment incurs 2% monthly interest", "Data privacy non-compliance may lead to penalties"]
+      "title": "Contract Signing",
+      "description": "Project initiation with defined deliverables and payment terms",
+      "detailed_description": "Upon signing, both parties agree to the project scope, deliverables, and payment schedule. Initial data access and AI model setup commence.",
+      "risks": ["Late payment penalties apply after 15 days", "Data privacy compliance required"]
     },
     {
       "order": 2,
-      "title": "Milestone 1: GAN Implementation Completion",
-      "description": "Deadline for GAN architecture deployment and initial synthetic data generation",
-      "detailed_description": "By this date, the GAN system must be fully operational, generating synthetic data that passes initial quality checks. Payment of ₹500,000 is due upon successful validation.",
-      "risks": ["Delay in deployment may incur ₹50,000 per week penalty", "Quality failure requires rework at client's cost"]
+      "title": "First Milestone Delivery",
+      "description": "Delivery of initial synthetic data models by Day 30",
+      "detailed_description": "First set of synthetic data models must be delivered and validated. Payment of ₹50,000 due upon acceptance.",
+      "risks": ["₹5,000 penalty per day delay", "Rejection risk if quality standards not met"]
     },
     {
       "order": 3,
-      "title": "Milestone 2: Blockchain Integration and Validation",
-      "description": "Integration of blockchain for tamper-proof recording and data validation",
-      "detailed_description": "Blockchain system must be live, recording all synthetic data generation processes. Payment of ₹750,000 due after successful audit and compliance verification.",
-      "risks": ["Non-compliance with data integrity standards may result in ₹100,000 penalty", "Audit failures delay payments"]
+      "title": "Mid-term Review",
+      "description": "Progress assessment at Day 90",
+      "detailed_description": "Comprehensive review of project progress, data quality, and compliance with agreed benchmarks. Second payment of ₹75,000 due.",
+      "risks": ["Project termination if benchmarks not met", "Additional compliance checks"]
     },
     {
       "order": 4,
-      "title": "Final Delivery and Model Performance Validation",
-      "description": "Full synthetic dataset delivery and ML model performance assessment",
-      "detailed_description": "Complete synthetic dataset handed over, with demonstrated 30% improvement in model performance as per contract. Final payment of ₹1,000,000 due within 30 days of acceptance.",
-      "risks": ["Performance shortfalls may reduce final payment by up to 50%", "Late acceptance triggers interest charges"]
+      "title": "Final Delivery",
+      "description": "Complete project delivery by Day 180",
+      "detailed_description": "Final synthetic data system delivery, including all documentation and validation reports. Final payment of ₹100,000 due.",
+      "risks": ["Final acceptance subject to quality audit", "Warranty period obligations begin"]
+    },
+    {
+      "order": 5,
+      "title": "Warranty Period End",
+      "description": "End of 12-month warranty and support period",
+      "detailed_description": "All support and warranty obligations conclude. Final project sign-off required.",
+      "risks": ["Extended support may incur additional costs", "Post-warranty issues not covered"]
     }
   ],
   "penalty_forecast": [
     {
-      "label": "Milestone 1 Delay (2 weeks)",
-      "base_amount": 500000
+      "label": "Milestone 1 Delay (5 days)",
+      "base_amount": 50000,
+      "fees_amount": 25000,
+      "penalties_amount": 5000,

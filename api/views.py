@@ -198,15 +198,30 @@ def parsed_doc_simulate_view(request: HttpRequest, pk: int):
     # No existing simulation found, generate new one asynchronously
     print(f"🔍 No existing simulation found for document {pk}, generating new one...")
     
-    # Start asynchronous simulation generation to avoid timeout
+    # Create a temporary simulation session immediately and update it asynchronously
     try:
+        from .models import SimulationSession
+        
+        # Create a temporary session with placeholder data
+        temp_session = SimulationSession.objects.create(
+            document=doc,
+            title=f"Generating simulation for {doc.file_name}...",
+            scenario="normal",
+            parameters={"source": "processing", "status": "generating"},
+            jurisdiction="",
+            jurisdiction_note="",
+        )
+        
+        # Start background generation with the session ID
         from .async_simulation import _generate_simulation_async
-        _generate_simulation_async(doc.id, doc.payload or {})
+        _generate_simulation_async(doc.id, doc.payload or {}, temp_session.id)
+        
         return JsonResponse({
             "status": "ok",
-            "session_id": None,
+            "session_id": temp_session.id,
             "cached": False,
-            "message": "Simulation generation started in background. Check back in a few moments."
+            "message": "Simulation generation started in background. Data will be updated shortly.",
+            "processing": True
         })
     except Exception as exc:  # noqa: BLE001
         print(f"❌ Failed to start simulation generation: {exc}")
