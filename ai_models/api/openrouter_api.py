@@ -84,8 +84,8 @@ class OpenRouterClient:
             }
         }))
 
-        # Allow long-running generations on Render (30–60s typical)
-        resp = requests.post(self.base_url, headers=headers, data=json.dumps(payload), timeout=120)
+        # Reduce timeout for production to prevent worker timeouts
+        resp = requests.post(self.base_url, headers=headers, data=json.dumps(payload), timeout=30)
         if resp.status_code >= 400:
             print(f"[OpenRouter] Error {resp.status_code}: {resp.text}")
             raise RuntimeError(f"OpenRouter error {resp.status_code}: {resp.text}")

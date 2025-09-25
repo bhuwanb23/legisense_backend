@@ -195,71 +195,27 @@ def parsed_doc_simulate_view(request: HttpRequest, pk: int):
             "message": "Using existing simulation data"
         })
 
-    # No existing simulation found, generate new one via LLM
+    # No existing simulation found, generate new one asynchronously
     print(f"🔍 No existing simulation found for document {pk}, generating new one...")
     
-    # Run extraction (LLM) to produce a structured JSON based on document content
+    # Start asynchronous simulation generation to avoid timeout
     try:
-        from ai_models.run_simulation_models_extraction import run_extraction
-        # Pass document content to the extraction
-        document_content = doc.payload.get('full_text', '') if doc.payload else ''
-        print(f"🔍 Document content length: {len(document_content)}")
-        print(f"🔍 Document content preview: {document_content[:200]}...")
-        extracted = run_extraction(document_content=document_content)
-        print(f"🤖 LLM extracted data: {extracted}")
+        from .async_simulation import _generate_simulation_async
+        _generate_simulation_async(doc.id, doc.payload or {})
+        return JsonResponse({
+            "status": "ok",
+            "session_id": None,
+            "cached": False,
+            "message": "Simulation generation started in background. Check back in a few moments."
+        })
     except Exception as exc:  # noqa: BLE001
-        # Check if it's an API key issue and provide a more helpful error
-        error_msg = str(exc)
-        if "OPENROUTER_API_KEY" in error_msg or "API key" in error_msg.lower():
-            print(f"❌ Simulation extraction failed due to missing API key: {exc}")
-            return JsonResponse({
-                "error": "API Configuration Required",
-                "message": "OpenRouter API key not configured. Please set OPENROUTER_API_KEY environment variable.",
-                "details": "The simulation feature requires an OpenRouter API key to generate realistic simulation data."
-            }, status=500)
-        else:
-            # Return error instead of mock data
-            print(f"❌ Simulation extraction failed: {exc}")
-            return JsonResponse({
-                "error": "Simulation generation failed",
-                "message": "Unable to generate simulation data. Please try again later.",
-                "details": str(exc)
-            }, status=500)
+        print(f"❌ Failed to start simulation generation: {exc}")
+        return JsonResponse({
+            "error": "Simulation generation failed",
+            "message": "Unable to start simulation generation. Please try again later.",
+            "details": str(exc)
+        }, status=500)
 
-    # Map extracted JSON to our import payload shape using LLM data
-    session_data = extracted.get("session", {})
-    session_payload = {
-        "document_id": doc.id,
-        "session": {
-            "title": session_data.get("title", f"Simulation for {doc.file_name}"),
-            "scenario": session_data.get("scenario", "normal"),
-            "parameters": session_data.get("parameters", {"source": "llm_extraction"}),
-            "jurisdiction": session_data.get("jurisdiction", ""),
-            "jurisdiction_note": session_data.get("jurisdiction_note", ""),
-        },
-        "timeline": extracted.get("timeline", []),
-        "penalty_forecast": extracted.get("penalty_forecast", []),
-        "exit_comparisons": extracted.get("exit_comparisons", []),
-        "narratives": extracted.get("narratives", []),
-        "long_term": extracted.get("long_term", []),
-        "risk_alerts": extracted.get("risk_alerts", []),
-    }
-
-    # Try to infer some defaults from enums/relationships if provided (best-effort)
-    # For now, we leave those arrays empty unless you want me to create mock data from the model definitions.
-
-    # Persist via the same code path as manual import
-    request._body = json.dumps(session_payload).encode("utf-8")  # type: ignore[attr-defined]
-    result = import_simulation_view(request)
-    
-    # If successful, add metadata to indicate this is a new simulation
-    if isinstance(result, JsonResponse) and result.status_code == 200:
-        response_data = json.loads(result.content.decode('utf-8'))
-        response_data['cached'] = False
-        response_data['message'] = 'New simulation generated'
-        return JsonResponse(response_data)
-    
-    return result
 
 
 @csrf_exempt
