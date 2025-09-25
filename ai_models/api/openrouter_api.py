@@ -49,11 +49,15 @@ class OpenRouterClient:
                 pass
         self.api_key = key
         if not self.api_key:
-            raise RuntimeError("OPENROUTER_API_KEY is not set")
+            print("⚠️ OPENROUTER_API_KEY is not set - simulation will use fallback data")
+            # Don't raise error, let the extraction function handle it gracefully
         self.model = model or os.getenv("OPENROUTER_MODEL", "deepseek/deepseek-chat-v3.1:free")
         self.base_url = "https://openrouter.ai/api/v1/chat/completions"
 
     def create_chat_completion(self, messages: List[Dict[str, str]], temperature: float = 0.2, max_tokens: int = 2000, response_format: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
+        if not self.api_key:
+            raise RuntimeError("OPENROUTER_API_KEY is not set - cannot make API call")
+        
         headers = {
             "Authorization": f"Bearer {self.api_key}",
             "Content-Type": "application/json",
