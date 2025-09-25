@@ -93,9 +93,44 @@ def run_extraction(document_content: str = "") -> Dict[str, Any]:
             raise ValueError("Missing 'session' key in response")
         return obj
     except json.JSONDecodeError as e:
-        raise ValueError(f"Invalid JSON response: {e}")
+        print(f"[Simulation Extraction] JSON parsing failed: {e}")
+        print(f"[Simulation Extraction] Raw content: {content[:500]}...")
+        # Return fallback data if JSON parsing fails
+        fallback = {
+            "session": {
+                "title": "Auto simulation (JSON parsing failed)",
+                "scenario": "normal",
+                "parameters": {"source": "json_parse_fallback"},
+                "jurisdiction": "",
+                "jurisdiction_note": "",
+            },
+            "timeline": [],
+            "penalty_forecast": [],
+            "exit_comparisons": [],
+            "narratives": [],
+            "long_term": [],
+            "risk_alerts": [],
+        }
+        return fallback
     except Exception as e:
-        raise ValueError(f"Validation error: {e}")
+        print(f"[Simulation Extraction] Validation failed: {e}")
+        # Return fallback data if validation fails
+        fallback = {
+            "session": {
+                "title": "Auto simulation (validation failed)",
+                "scenario": "normal",
+                "parameters": {"source": "validation_fallback"},
+                "jurisdiction": "",
+                "jurisdiction_note": "",
+            },
+            "timeline": [],
+            "penalty_forecast": [],
+            "exit_comparisons": [],
+            "narratives": [],
+            "long_term": [],
+            "risk_alerts": [],
+        }
+        return fallback
 
 
 def main() -> None:

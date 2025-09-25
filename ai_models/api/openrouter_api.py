@@ -56,7 +56,7 @@ class OpenRouterClient:
 
     def create_chat_completion(self, messages: List[Dict[str, str]], temperature: float = 0.2, max_tokens: int = 2000, response_format: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
         if not self.api_key:
-            raise RuntimeError("OPENROUTER_API_KEY is not set - cannot make API call")
+            raise RuntimeError("OPENROUTER_API_KEY is not set - cannot make API call. Please configure the OpenRouter API key in your environment variables.")
         
         headers = {
             "Authorization": f"Bearer {self.api_key}",

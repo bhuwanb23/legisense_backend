@@ -1,215 +1,48 @@
 {
   "session": {
-    "title": "Simulation for Professional Services Agreement",
+    "title": "Simulation for L&T Technology Services Synthetic Data Project Contract",
     "scenario": "normal",
     "parameters": {
       "scenario": "normal",
       "missedPayments": 0,
       "earlyTermination": false,
       "delayDays": 0,
-      "interestRate": 0.0
+      "interestRate": 2.0
     },
-    "jurisdiction": "California, USA",
-    "jurisdiction_note": "Contract governed by California law, with specific provisions for termination, indemnification, and compliance with state and federal regulations."
+    "jurisdiction": "Maharashtra, India",
+    "jurisdiction_note": "Contract terms align with Indian IT services regulations, with adjustments for data privacy compliance under the Digital Personal Data Protection Act, 2023."
   },
   "timeline": [
     {
       "order": 1,
-      "title": "Agreement Effective Date",
-      "description": "Contract takes effect upon board approval and notification to proceed",
-      "detailed_description": "The Agreement becomes effective only after approval by the COMMISSION's governing board and notification to proceed by the Contract Manager. Work must not commence before this date.",
-      "risks": ["Work performed prior to approval is not reimbursable", "Delays in board approval may impact project timeline"]
+      "title": "Contract Signing and Initial Data Handover",
+      "description": "Execution of agreement and transfer of limited real dataset",
+      "detailed_description": "Upon signing, L&T Technology Services provides the initial real dataset for synthetic data generation. The client agrees to pay the first milestone payment within 15 days.",
+      "risks": ["Late payment incurs 2% monthly interest", "Data privacy non-compliance may lead to penalties"]
     },
     {
       "order": 2,
-      "title": "Monthly Invoice Submission",
-      "description": "Invoices due within 45 calendar days after work performance",
-      "detailed_description": "CONSULTANT must submit itemized invoices no later than 45 calendar days after performing work. Invoices must include labor details, expenses, progress reports, and cumulative charges.",
-      "risks": ["Late submission may delay payment", "Incomplete invoices may be rejected"]
+      "title": "Milestone 1: GAN Implementation Completion",
+      "description": "Deadline for GAN architecture deployment and initial synthetic data generation",
+      "detailed_description": "By this date, the GAN system must be fully operational, generating synthetic data that passes initial quality checks. Payment of ₹500,000 is due upon successful validation.",
+      "risks": ["Delay in deployment may incur ₹50,000 per week penalty", "Quality failure requires rework at client's cost"]
     },
     {
       "order": 3,
-      "title": "Progress Payment Due",
-      "description": "Payments made monthly in arrears upon approval of services",
-      "detailed_description": "COMMISSION makes progress payments no less than monthly in arrears based on satisfactory services and actual allowable costs. Payment requires approval of work and valid invoices.",
-      "risks": ["Payment delays if deliverables are not met", "Non-compliance may lead to termination"]
+      "title": "Milestone 2: Blockchain Integration and Validation",
+      "description": "Integration of blockchain for tamper-proof recording and data validation",
+      "detailed_description": "Blockchain system must be live, recording all synthetic data generation processes. Payment of ₹750,000 due after successful audit and compliance verification.",
+      "risks": ["Non-compliance with data integrity standards may result in ₹100,000 penalty", "Audit failures delay payments"]
     },
     {
       "order": 4,
-      "title": "Compliance and Audit Review",
-      "description": "Monthly compliance checks and potential audit within 5 years post-payment",
-      "detailed_description": "Regular monitoring of contract adherence, with records retained for 5 years from final payment. COMMISSION and auditors may inspect work and records at reasonable times.",
-      "risks": ["Non-compliance may incur penalties", "Audit disputes may lead to financial adjustments"]
-    },
-    {
-      "order": 5,
-      "title": "Agreement End Date",
-      "description": "Contract ends on specified date unless terminated or extended",
-      "detailed_description": "The Agreement terminates on the end date unless earlier termination occurs or an extension is granted via contract amendment.",
-      "risks": ["Early termination may incur costs", "Failure to complete work may lead to default"]
+      "title": "Final Delivery and Model Performance Validation",
+      "description": "Full synthetic dataset delivery and ML model performance assessment",
+      "detailed_description": "Complete synthetic dataset handed over, with demonstrated 30% improvement in model performance as per contract. Final payment of ₹1,000,000 due within 30 days of acceptance.",
+      "risks": ["Performance shortfalls may reduce final payment by up to 50%", "Late acceptance triggers interest charges"]
     }
   ],
   "penalty_forecast": [
     {
-      "label": "Month 1 - Late Invoice Submission",
-      "base_amount": 0,
-      "fees_amount": 0,
-      "penalties_amount": 0,
-      "total_amount": 0
-    },
-    {
-      "label": "Month 3 - Default Termination",
-      "base_amount": 0,
-      "fees_amount": 5000,
-      "penalties_amount": 10000,
-      "total_amount": 15000
-    },
-    {
-      "label": "Month 6 - Reprocurrent Costs",
-      "base_amount": 0,
-      "fees_amount": 10000,
-      "penalties_amount": 20000,
-      "total_amount": 30000
-    },
-    {
-      "label": "Month 12 - Full Default Penalties",
-      "base_amount": 0,
-      "fees_amount": 20000,
-      "penalties_amount": 50000,
-      "total_amount": 70000
-    }
-  ],
-  "exit_comparisons": [
-    {
-      "label": "Termination for Convenience by COMMISSION",
-      "penalty_text": "Allowable costs incurred plus termination costs",
-      "risk_level": "low",
-      "benefits_lost": "Payment for work done, no further claims"
-    },
-    {
-      "label": "Termination for Default by COMMISSION",
-      "penalty_text": "Reprocurement costs and all reasonable expenses",
-      "risk_level": "high",
-      "benefits_lost": "All unpaid amounts forfeited, liability for COMMISSION costs"
-    },
-    {
-      "label": "Termination by CONSULTANT with 120-day notice",
-      "penalty_text": "Reprocurement costs and all reasonable expenses",
-      "risk_level": "medium",
-      "benefits_lost": "Liability for COMMISSION costs, potential reputational damage"
-    },
-    {
-      "label": "Full Term Completion",
-      "penalty_text": "₹0",
-      "risk_level": "low",
-      "benefits_lost": "None - all benefits retained"
-    }
-  ],
-  "narratives": [
-    {
-      "title": "Ideal Contract Performance",
-      "subtitle": "All terms met without issues",
-      "narrative": "CONSULTANT submits invoices on time, provides all required deliverables, and maintains compliance with all laws and insurance requirements. COMMISSION approves work promptly and makes payments as scheduled. The contract concludes successfully on the end date.",
-      "severity": "low",
-      "key_points": [
-        "Timely invoice submission and payment",
-        "No compliance issues or disputes",
-        "Insurance and indemnification requirements met",
-        "Positive relationship maintained"
-      ],
-      "financial_impact": [
-        "Total cost: As per agreed fee schedule",
-        "No additional fees or penalties",
-        "All reimbursable expenses covered"
-      ]
-    },
-    {
-      "title": "Default Termination Scenario",
-      "subtitle": "CONSULTANT fails to cure breach within 10 days",
-      "narrative": "CONSULTANT breaches a contract term (e.g., fails to maintain insurance) and does not cure it within 10 days after written notice. COMMISSION terminates for default, leading to reprocurement costs and other expenses charged to CONSULTANT.",
-      "severity": "high",
-      "key_points": [
-        "Breach of contract term occurs",
-        "10-day cure period not met",
-        "COMMISSION incurs reprocurement costs",
-        "CONSULTANT liable for all reasonable expenses"
-      ],
-      "financial_impact": [
-        "Reprocurement costs: ₹20,000",
-        "Additional COMMISSION expenses: ₹5,000",
-        "Total CONSULTANT liability: ₹25,000",
-        "Unpaid work amounts forfeited"
-      ]
-    },
-    {
-      "title": "Late Invoice Submission Impact",
-      "subtitle": "Delays in billing lead to payment holds",
-      "narrative": "CONSULTANT submits invoices after the 45-day deadline, causing payment delays. COMMISSION may withhold payment until compliant invoices are received, impacting CONSULTANT's cash flow and potentially triggering compliance reviews.",
-      "severity": "medium",
-      "key_points": [
-        "Invoices submitted late",
-        "Payment delays occur",
-        "Potential for compliance scrutiny",
-        "Risk of termination if persistent"
-      ],
-      "financial_impact": [
-        "Cash flow disruption for CONSULTANT",
-        "Possible interest costs if financing gaps",
-        "No direct penalties, but indirect financial strain"
-      ]
-    }
-  ],
-  "long_term": [
-    {
-      "index": 1,
-      "label": "Year 1",
-      "value": 120000,
-      "description": "Base contract value with no penalties, assuming timely performance and payments"
-    },
-    {
-      "index": 2,
-      "label": "Year 2",
-      "value": 240000,
-      "description": "Cumulative costs if contract extends or penalties accumulate from delays"
-    },
-    {
-      "index": 3,
-      "label": "Year 3",
-      "value": 360000,
-      "description": "Maximum exposure with full term completion and potential audit adjustments"
-    },
-    {
-      "index": 4,
-      "label": "Year 5",
-      "value": 600000,
-      "description": "Long-term including post-agreement insurance costs and audit reserves"
-    }
-  ],
-  "risk_alerts": [
-    {
-      "level": "high",
-      "message": "Insurance Compliance Risk: Failure to maintain required insurance coverage (e.g., General Liability, Workers' Compensation) allows COMMISSION to terminate immediately. Ensure all policies are active and certificates provided on time.",
-      "recommendation": "Regularly review insurance policies, set reminders for renewals, and submit certificates promptly to COMMISSION."
-    },
-    {
-      "level": "medium",
-      "message": "Invoice Submission Deadline: Invoices must be submitted within 45 days of work performance. Late submissions can delay payments and trigger compliance issues.",
-      "recommendation": "Implement a billing schedule aligned with work completion dates to avoid missing deadlines."
-    },
-    {
-      "level": "high",
-      "message": "Default Termination Clause: COMMISSION can terminate for default with only 10 days to cure breaches. This includes failures in performance, insurance, or compliance with laws.",
-      "recommendation": "Monitor all contract terms closely, respond immediately to any notices of breach, and document cure actions."
-    },
-    {
-      "level": "critical",
-      "message": "Indemnification Liability: CONSULTANT must indemnify COMMISSION for all claims, damages, and taxes related to negligence or misconduct. This could lead to significant financial exposure beyond contract value.",
-      "recommendation": "Maintain adequate professional liability insurance and conduct regular risk assessments to mitigate potential claims."
-    },
-    {
-      "level": "medium",
-      "message": "Audit and Record Retention: Records must be kept for 5 years post-payment. Failure to provide access for audit can result in disputes and financial penalties.",
-      "recommendation": "Establish a secure record-keeping system and prepare for potential audits by retaining all relevant documents."
-    }
-  ]
-}
+      "label": "Milestone 1 Delay (2 weeks)",
+      "base_amount": 500000

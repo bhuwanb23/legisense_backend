@@ -208,13 +208,23 @@ def parsed_doc_simulate_view(request: HttpRequest, pk: int):
         extracted = run_extraction(document_content=document_content)
         print(f"🤖 LLM extracted data: {extracted}")
     except Exception as exc:  # noqa: BLE001
-        # Return error instead of mock data
-        print(f"❌ Simulation extraction failed: {exc}")
-        return JsonResponse({
-            "error": "Simulation generation failed",
-            "message": "Unable to generate simulation data. Please try again later.",
-            "details": str(exc)
-        }, status=500)
+        # Check if it's an API key issue and provide a more helpful error
+        error_msg = str(exc)
+        if "OPENROUTER_API_KEY" in error_msg or "API key" in error_msg.lower():
+            print(f"❌ Simulation extraction failed due to missing API key: {exc}")
+            return JsonResponse({
+                "error": "API Configuration Required",
+                "message": "OpenRouter API key not configured. Please set OPENROUTER_API_KEY environment variable.",
+                "details": "The simulation feature requires an OpenRouter API key to generate realistic simulation data."
+            }, status=500)
+        else:
+            # Return error instead of mock data
+            print(f"❌ Simulation extraction failed: {exc}")
+            return JsonResponse({
+                "error": "Simulation generation failed",
+                "message": "Unable to generate simulation data. Please try again later.",
+                "details": str(exc)
+            }, status=500)
 
     # Map extracted JSON to our import payload shape using LLM data
     session_data = extracted.get("session", {})
